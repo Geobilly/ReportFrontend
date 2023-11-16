@@ -98,14 +98,14 @@ const ReportForm = () => {
             rows={8} // You can adjust the number of rows as needed
           />
 
-          <TextField
+          {/* <TextField
             label="Attachments"
             name="attachments"
             fullWidth
             margin="normal"
             value={report.attachments}
             onChange={handleChange}
-          />
+          /> */}
           <Box mt={2}>
             <Button variant="contained" color="primary" type="submit">
               Submit Report
