@@ -3,29 +3,26 @@ import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const TasksTable = ({ loggedInUsername }) => {
+const TasksTable = () => {
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log('Username:', loggedInUsername); // Log the username when it changes
+  // Retrieve the username from localStorage
+  const loggedInUsername = localStorage.getItem('loggedInUsername');
 
+  useEffect(() => {
     // Fetch data from the Flask API when the component mounts
     const fetchData = async () => {
       try {
         const response = await axios.get('https://kempshot-report.onrender.com/fetch-tasks');
         setTasks(response.data);
 
-        // Apply filter based on the username
-        if (loggedInUsername === 'Maclean') {
-          setFilteredTasks(response.data);
-        } else {
-          const filteredTasks = response.data.filter(task => task.name_of_staff === loggedInUsername);
-          setFilteredTasks(filteredTasks);
-        }
+        // Filter tasks based on the username
+        const filteredTasks = response.data.filter((task) => task.name_of_staff === loggedInUsername);
+        setFilteredTasks(filteredTasks);
       } catch (error) {
         console.error('Error fetching tasks:', error);
       }
