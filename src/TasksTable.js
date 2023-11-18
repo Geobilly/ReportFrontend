@@ -1,5 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import {
+  Table,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  Typography,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,6 +24,7 @@ const TasksTable = () => {
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [nameFilter, setNameFilter] = useState('');
   const navigate = useNavigate();
 
   // Retrieve the username from localStorage
@@ -52,6 +69,13 @@ const TasksTable = () => {
     navigate('/');
   };
 
+  const handleNameFilterChange = (event) => {
+    setNameFilter(event.target.value);
+  };
+
+  // Get unique names
+  const uniqueNames = Array.from(new Set(tasks.map((task) => task.name_of_staff)));
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '10px' }}>
@@ -59,7 +83,7 @@ const TasksTable = () => {
           Logout
         </Button>
       </div>
-      
+
       <Typography variant="h4" align="center" gutterBottom>
         Task Table
       </Typography>
@@ -68,22 +92,50 @@ const TasksTable = () => {
           <TableHead>
             <TableRow>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">ID</Typography>
+                <Typography variant="subtitle1">
+                  ID
+                </Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">Name of Staff</Typography>
+                <Typography variant="subtitle1">
+                  Name of Staff{' '}
+                  {loggedInUsername === 'Maclean' && (
+                    <Select
+                      label="Filter by Name"
+                      value={nameFilter}
+                      onChange={handleNameFilterChange}
+                      size="small"
+                      style={{ marginLeft: '5px' }}
+                    >
+                      <MenuItem value="">All Names</MenuItem>
+                      {uniqueNames.map((name) => (
+                        <MenuItem key={name} value={name}>
+                          {name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                </Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">Title</Typography>
+                <Typography variant="subtitle1">
+                  Title
+                </Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">Content of Task</Typography>
+                <Typography variant="subtitle1">
+                  Content of Task
+                </Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">Date</Typography>
+                <Typography variant="subtitle1">
+                  Date
+                </Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">Action</Typography>
+                <Typography variant="subtitle1">
+                  Action
+                </Typography>
               </TableCell>
             </TableRow>
           </TableHead>
