@@ -3,33 +3,36 @@ import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const ReportTable = () => {
-  const [reports, setReports] = useState([]);
-  const [selectedReport, setSelectedReport] = useState(null);
+const TasksTable = () => {
+  const [tasks, setTasks] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const navigate = useNavigate();
+
+  // Retrieve the username from localStorage
+  const loggedInUsername = localStorage.getItem('loggedInUsername');
 
   useEffect(() => {
     // Fetch data from the Flask API when the component mounts
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://kempshot-report.onrender.com/fetch-reports');
-        // Truncate the report content for display in the table
-        const truncatedReports = response.data.map((report) => ({
-          ...report,
-          report_content_truncated: report.report_content.substring(0, 50) + (report.report_content.length > 50 ? '...' : ''),
-        }));
-        setReports(truncatedReports);
+        const response = await axios.get('https://kempshot-report.onrender.com/fetch-tasks');
+        setTasks(response.data);
+
+        // Filter tasks based on the username
+        const filteredTasks = response.data.filter((task) => task.name_of_staff === loggedInUsername);
+        setFilteredTasks(filteredTasks);
       } catch (error) {
-        console.error('Error fetching reports:', error);
+        console.error('Error fetching tasks:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [loggedInUsername]);
 
-  const handleView = (report) => {
-    setSelectedReport(report);
+  const handleView = (task) => {
+    setSelectedTask(task);
     setOpenDialog(true);
   };
 
@@ -42,15 +45,6 @@ const ReportTable = () => {
     // Redirect the user to the login screen
     navigate('/');
   };
-  const handleNavigateToSubmitTask = () => {
-    // Navigate to the "Submit Task" screen
-    navigate('/submit-task');
-  };
-
-  const handleNavigateToViewTask = () => {
-    // Navigate to the "Submit Task" screen
-    navigate('/tasks-table');
-  };
 
   return (
     <div>
@@ -58,31 +52,29 @@ const ReportTable = () => {
         <Button variant="outlined" onClick={handleLogout}>
           Logout
         </Button>
-        <Button variant="outlined" onClick={handleNavigateToViewTask}>
-          VIEW TASK
-        </Button>
-        <Button variant="outlined" onClick={handleNavigateToSubmitTask}>
-          ADD TASK
-        </Button>
       </div>
+      
       <Typography variant="h4" align="center" gutterBottom>
-        Report Table
+        Task Table
       </Typography>
       <TableContainer component={Paper}>
         <Table style={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">Author Name</Typography>
+                <Typography variant="subtitle1">ID</Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">Report Content</Typography>
+                <Typography variant="subtitle1">Name of Staff</Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">Report Title</Typography>
+                <Typography variant="subtitle1">Title</Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">Submission Date</Typography>
+                <Typography variant="subtitle1">Content of Task</Typography>
+              </TableCell>
+              <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
+                <Typography variant="subtitle1">Date</Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>
                 <Typography variant="subtitle1">Action</Typography>
@@ -90,22 +82,25 @@ const ReportTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {reports.map((report) => (
-              <TableRow key={report.submission_date}>
+            {filteredTasks.map((task) => (
+              <TableRow key={task.id}>
                 <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {report.author_name}
+                  {task.id}
                 </TableCell>
                 <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {report.report_content_truncated}
+                  {task.name_of_staff}
                 </TableCell>
                 <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {report.report_title}
+                  {task.title}
                 </TableCell>
                 <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {report.submission_date}
+                  {task.content_of_task}
+                </TableCell>
+                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
+                  {task.date}
                 </TableCell>
                 <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
-                  <Button variant="outlined" onClick={() => handleView(report)}>
+                  <Button variant="outlined" onClick={() => handleView(task)}>
                     View
                   </Button>
                 </TableCell>
@@ -115,9 +110,12 @@ const ReportTable = () => {
         </Table>
       </TableContainer>
       <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="md">
-        <DialogTitle>{selectedReport && selectedReport.report_title}</DialogTitle>
+        <DialogTitle>{selectedTask && `Task ${selectedTask.id}`}</DialogTitle>
         <DialogContent style={{ overflowY: 'auto', height: '70vh', wordWrap: 'break-word' }}>
-          {selectedReport && selectedReport.report_content}
+          <Typography variant="body1">{selectedTask && `Name of Staff: ${selectedTask.name_of_staff}`}</Typography>
+          <Typography variant="body1">{selectedTask && `Title: ${selectedTask.title}`}</Typography>
+          <Typography variant="body1">{selectedTask && `Content of Task: ${selectedTask.content_of_task}`}</Typography>
+          <Typography variant="body1">{selectedTask && `Date: ${selectedTask.date}`}</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Close</Button>
@@ -127,4 +125,4 @@ const ReportTable = () => {
   );
 };
 
-export default ReportTable;
+export default TasksTable;

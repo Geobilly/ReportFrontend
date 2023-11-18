@@ -3,7 +3,7 @@ import { TextField, Button, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -11,28 +11,41 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.post('https://kempshot-report.onrender.com/login', {
-        username,
-        password,
-      });
+  try {
+    setLoading(true);
+    const response = await axios.post('https://kempshot-report.onrender.com/login', {
+      username,
+      password,
+    });
 
-      setMessage(response.data.message);
+    setMessage(response.data.message);
 
-      if (response.status === 200) {
-        // Simulate successful login, replace with your logic
-        setMessage('Login successful');
-
+    if (response.status === 200) {
+      // Check if the username is Maclean
+      if (username === 'Maclean') {
         // Redirect to the ReportTable after successful login
         navigate('/report-table');
+      } else {
+        // Redirect to the TaskTable for other usernames
+        navigate('/tasks-table');
       }
-    } catch (error) {
-      setMessage('Login failed. Please check your credentials.');
-    } finally {
-      setLoading(false);
+
+      // Store the username in localStorage
+      localStorage.setItem('loggedInUsername', username);
+
+      // Call the onLogin prop to pass the username to the parent component
+      onLogin(username);
+
+      // Log the username to the console
+      console.log('Logged in as:', username);
     }
-  };
+  } catch (error) {
+    setMessage('Login failed. Please check your credentials.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
