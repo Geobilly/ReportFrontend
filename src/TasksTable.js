@@ -20,9 +20,15 @@ const TasksTable = () => {
         const response = await axios.get('https://kempshot-report.onrender.com/fetch-tasks');
         setTasks(response.data);
 
-        // Filter tasks based on the username
-        const filteredTasks = response.data.filter((task) => task.name_of_staff === loggedInUsername);
-        setFilteredTasks(filteredTasks);
+        // Check if the username is "Maclean"
+        if (loggedInUsername === 'Maclean') {
+          // If the username is "Maclean," show all tasks without filtering
+          setFilteredTasks(response.data);
+        } else {
+          // Filter tasks based on the username for other users
+          const filteredTasks = response.data.filter((task) => task.name_of_staff === loggedInUsername);
+          setFilteredTasks(filteredTasks);
+        }
       } catch (error) {
         console.error('Error fetching tasks:', error);
       }
