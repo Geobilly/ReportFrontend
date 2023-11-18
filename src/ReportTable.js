@@ -1,5 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import {
+  Table,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  Typography,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,6 +23,7 @@ const ReportTable = () => {
   const [reports, setReports] = useState([]);
   const [selectedReport, setSelectedReport] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [authorFilter, setAuthorFilter] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,6 +59,7 @@ const ReportTable = () => {
     // Redirect the user to the login screen
     navigate('/');
   };
+
   const handleNavigateToSubmitTask = () => {
     // Navigate to the "Submit Task" screen
     navigate('/submit-task');
@@ -51,6 +69,13 @@ const ReportTable = () => {
     // Navigate to the "Submit Task" screen
     navigate('/tasks-table');
   };
+
+  const handleAuthorFilterChange = (event) => {
+    setAuthorFilter(event.target.value);
+  };
+
+  // Get unique author names
+  const uniqueAuthorNames = Array.from(new Set(reports.map((report) => report.author_name)));
 
   return (
     <div>
@@ -73,7 +98,23 @@ const ReportTable = () => {
           <TableHead>
             <TableRow>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">Author Name</Typography>
+                <Typography variant="subtitle1">
+                  Author Name{' '}
+                  <Select
+                    label="Filter by Author Name"
+                    value={authorFilter}
+                    onChange={handleAuthorFilterChange}
+                    size="small"
+                    style={{ marginLeft: '5px' }}
+                  >
+                    <MenuItem value="">All Authors</MenuItem>
+                    {uniqueAuthorNames.map((authorName) => (
+                      <MenuItem key={authorName} value={authorName}>
+                        {authorName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
                 <Typography variant="subtitle1">Report Content</Typography>
@@ -90,27 +131,29 @@ const ReportTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {reports.map((report) => (
-              <TableRow key={report.submission_date}>
-                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {report.author_name}
-                </TableCell>
-                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {report.report_content_truncated}
-                </TableCell>
-                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {report.report_title}
-                </TableCell>
-                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {report.submission_date}
-                </TableCell>
-                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
-                  <Button variant="outlined" onClick={() => handleView(report)}>
-                    View
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {reports
+              .filter((report) => !authorFilter || report.author_name === authorFilter)
+              .map((report) => (
+                <TableRow key={report.submission_date}>
+                  <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
+                    {report.author_name}
+                  </TableCell>
+                  <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
+                    {report.report_content_truncated}
+                  </TableCell>
+                  <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
+                    {report.report_title}
+                  </TableCell>
+                  <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
+                    {report.submission_date}
+                  </TableCell>
+                  <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                    <Button variant="outlined" onClick={() => handleView(report)}>
+                      View
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
