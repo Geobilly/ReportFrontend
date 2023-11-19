@@ -71,7 +71,15 @@ const TasksTable = () => {
   };
 
   const handleNameFilterChange = (event) => {
-    setNameFilter(event.target.value);
+    const filterValue = event.target.value;
+    setNameFilter(filterValue);
+
+    // Filter tasks based on the selected name
+    const updatedFilteredTasks = filterValue
+      ? tasks.filter((task) => task.name_of_staff === filterValue)
+      : tasks;
+
+    setFilteredTasks(updatedFilteredTasks);
   };
 
   const handleUpdateStatus = async () => {
