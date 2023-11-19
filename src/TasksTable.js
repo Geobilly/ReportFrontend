@@ -25,6 +25,7 @@ const TasksTable = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [nameFilter, setNameFilter] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState(''); // Added state for selected status
   const navigate = useNavigate();
 
   // Retrieve the username from localStorage
@@ -73,6 +74,35 @@ const TasksTable = () => {
     setNameFilter(event.target.value);
   };
 
+  const handleUpdateStatus = async () => {
+    try {
+      if (!selectedTask) {
+        console.error('No task selected for status update');
+        return;
+      }
+
+      if (!selectedStatus) {
+        console.error('No status selected for update');
+        return;
+      }
+
+      const response = await axios.put(`https://kempshot-report.onrender.com/update-status/${selectedTask.id}`, {
+        new_status: selectedStatus,
+      });
+
+      // Check the response status or handle it as needed
+      if (response.status === 200) {
+        // Refetch the tasks after updating the status
+        fetchData();
+        handleCloseDialog();
+      } else {
+        console.error('Failed to update status:', response.data);
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
+  };
+
   // Get unique names
   const uniqueNames = Array.from(new Set(tasks.map((task) => task.name_of_staff)));
 
@@ -92,9 +122,7 @@ const TasksTable = () => {
           <TableHead>
             <TableRow>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">
-                  ID
-                </Typography>
+                <Typography variant="subtitle1">ID</Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
                 <Typography variant="subtitle1">
@@ -118,24 +146,19 @@ const TasksTable = () => {
                 </Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">
-                  Title
-                </Typography>
+                <Typography variant="subtitle1">Title</Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">
-                  Content of Task
-                </Typography>
+                <Typography variant="subtitle1">Content of Task</Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">
-                  Date
-                </Typography>
+                <Typography variant="subtitle1">Date</Typography>
+              </TableCell>
+              <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
+                <Typography variant="subtitle1">Action</Typography>
               </TableCell>
               <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>
-                <Typography variant="subtitle1">
-                  Action
-                </Typography>
+                <Typography variant="subtitle1">Status</Typography>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -157,10 +180,14 @@ const TasksTable = () => {
                 <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
                   {task.date}
                 </TableCell>
-                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
                   <Button variant="outlined" onClick={() => handleView(task)}>
                     View
                   </Button>
+                </TableCell>
+                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
+                  {/* Display task status */}
+                  {task.status}
                 </TableCell>
               </TableRow>
             ))}
@@ -174,8 +201,20 @@ const TasksTable = () => {
           <Typography variant="body1">{selectedTask && `Title: ${selectedTask.title}`}</Typography>
           <Typography variant="body1">{selectedTask && `Content of Task: ${selectedTask.content_of_task}`}</Typography>
           <Typography variant="body1">{selectedTask && `Date: ${selectedTask.date}`}</Typography>
+
+          {/* Dropdown for selecting status */}
+          <Select
+            label="Task Status"
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            style={{ marginTop: '16px' }}
+          >
+            <MenuItem value="In Progress">In Progress</MenuItem>
+            <MenuItem value="Done">Done</MenuItem>
+          </Select>
         </DialogContent>
         <DialogActions>
+          <Button onClick={handleUpdateStatus}>Update Status</Button>
           <Button onClick={handleCloseDialog}>Close</Button>
         </DialogActions>
       </Dialog>
