@@ -41,7 +41,7 @@ const ReportForm = () => {
     }
 
     try {
-      const response = await axios.post('https://kempshot-report.onrender.com/submit-report', report);
+      const response = await axios.post('https://kempstasksystem.onrender.com/submit-report', report);
       console.log(response.data);
 
       setSuccessMessage('Report submitted successfully');
