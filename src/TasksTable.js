@@ -94,7 +94,7 @@ const TasksTable = () => {
         return;
       }
 
-      const response = await axios.put(`https://kempstasksystem.onrender.com/update-status/${selectedTask.id}`, {
+      const response = await axios.put(`https://sqlreportsystem.onrender.com/update-status/${selectedTask.id}`, {
         new_status: selectedStatus,
       });
 
