@@ -30,7 +30,7 @@ const ReportTable = () => {
     // Fetch data from the Flask API when the component mounts
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://kempshot-report.onrender.com/fetch-reports');
+        const response = await axios.get('https://kempstasksystem.onrender.com/fetch-reports');
         // Truncate the report content for display in the table
         const truncatedReports = response.data.map((report) => ({
           ...report,
