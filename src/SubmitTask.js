@@ -32,7 +32,7 @@ const SubmitTask = () => {
       }
 
       // Use the correct API endpoint for your Flask server
-      const apiUrl = 'https://kempstasksystem.onrender.com/submit-task';
+      const apiUrl = 'https://sqlreportsystem.onrender.com/submit-task';
 
       // Send data to the Flask API
       await axios.post(apiUrl, {
