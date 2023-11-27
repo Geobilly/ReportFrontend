@@ -15,35 +15,31 @@ import {
   DialogActions,
   Select,
   MenuItem,
+  CircularProgress,
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const TasksTable = () => {
   const [tasks, setTasks] = useState([]);
-  const [filteredTasks, setFilteredTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [nameFilter, setNameFilter] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState(''); // Added state for selected status
+  const [selectedStatus, setSelectedStatus] = useState('');
   const navigate = useNavigate();
 
-  // Retrieve the username from localStorage
   const loggedInUsername = localStorage.getItem('loggedInUsername');
+  const isLoading = !tasks.length;
 
   useEffect(() => {
-    // Fetch data from the Flask API when the component mounts
     const fetchData = async () => {
       try {
         const response = await axios.get('https://kempshot-report.onrender.com/fetch-tasks');
         setTasks(response.data);
 
-        // Check if the username is "Maclean"
         if (loggedInUsername === 'Maclean') {
-          // If the username is "Maclean," show all tasks without filtering
           setFilteredTasks(response.data);
         } else {
-          // Filter tasks based on the username for other users
           const filteredTasks = response.data.filter((task) => task.name_of_staff === loggedInUsername);
           setFilteredTasks(filteredTasks);
         }
@@ -65,8 +61,6 @@ const TasksTable = () => {
   };
 
   const handleLogout = () => {
-    // Perform logout actions, e.g., clear authentication tokens, user data, etc.
-    // Redirect the user to the login screen
     navigate('/');
   };
 
@@ -74,7 +68,6 @@ const TasksTable = () => {
     const filterValue = event.target.value;
     setNameFilter(filterValue);
 
-    // Filter tasks based on the selected name
     const updatedFilteredTasks = filterValue
       ? tasks.filter((task) => task.name_of_staff === filterValue)
       : tasks;
@@ -98,9 +91,7 @@ const TasksTable = () => {
         new_status: selectedStatus,
       });
 
-      // Check the response status or handle it as needed
       if (response.status === 200) {
-        // Refetch the tasks after updating the status
         fetchData();
         handleCloseDialog();
       } else {
@@ -111,7 +102,6 @@ const TasksTable = () => {
     }
   };
 
-  // Get unique names
   const uniqueNames = Array.from(new Set(tasks.map((task) => task.name_of_staff)));
 
   return (
@@ -129,10 +119,10 @@ const TasksTable = () => {
         <Table style={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
-              <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
+              <TableCell>
                 <Typography variant="subtitle1">ID</Typography>
               </TableCell>
-              <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
+              <TableCell>
                 <Typography variant="subtitle1">
                   Name of Staff{' '}
                   {loggedInUsername === 'Maclean' && (
@@ -153,52 +143,47 @@ const TasksTable = () => {
                   )}
                 </Typography>
               </TableCell>
-              <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
+              <TableCell>
                 <Typography variant="subtitle1">Title</Typography>
               </TableCell>
-              <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
+              <TableCell>
                 <Typography variant="subtitle1">Content of Task</Typography>
               </TableCell>
-              <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
+              <TableCell>
                 <Typography variant="subtitle1">Date</Typography>
               </TableCell>
-              <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
+              <TableCell>
                 <Typography variant="subtitle1">Action</Typography>
               </TableCell>
-              <TableCell style={{ borderBottom: '2px solid rgba(224, 224, 224, 1)' }}>
+              <TableCell>
                 <Typography variant="subtitle1">Status</Typography>
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredTasks.map((task) => (
-              <TableRow key={task.id}>
-                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {task.id}
-                </TableCell>
-                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {task.name_of_staff}
-                </TableCell>
-                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {task.title}
-                </TableCell>
-                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {task.content_of_task}
-                </TableCell>
-                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {task.date}
-                </TableCell>
-                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)', borderRight: '1px solid rgba(224, 224, 224, 1)' }}>
-                  <Button variant="outlined" onClick={() => handleView(task)}>
-                    View
-                  </Button>
-                </TableCell>
-                <TableCell style={{ borderBottom: '1px solid rgba(224, 224, 224, 1)' }}>
-                  {/* Display task status */}
-                  {task.status}
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  <CircularProgress />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              filteredTasks.map((task) => (
+                <TableRow key={task.id}>
+                  <TableCell>{task.id}</TableCell>
+                  <TableCell>{task.name_of_staff}</TableCell>
+                  <TableCell>{task.title}</TableCell>
+                  <TableCell>{task.content_of_task}</TableCell>
+                  <TableCell>{task.date}</TableCell>
+                  <TableCell>
+                    <Button variant="outlined" onClick={() => handleView(task)}>
+                      View
+                    </Button>
+                  </TableCell>
+                  <TableCell>{task.status}</TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>
@@ -210,7 +195,6 @@ const TasksTable = () => {
           <Typography variant="body1">{selectedTask && `Content of Task: ${selectedTask.content_of_task}`}</Typography>
           <Typography variant="body1">{selectedTask && `Date: ${selectedTask.date}`}</Typography>
 
-          {/* Dropdown for selecting status */}
           <Select
             label="Task Status"
             value={selectedStatus}
