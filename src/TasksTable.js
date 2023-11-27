@@ -34,7 +34,7 @@ const TasksTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://kempshot-report.onrender.com/fetch-tasks');
+        const response = await axios.get('https://kempstasksystem.onrender.com//fetch-tasks');
         setTasks(response.data);
 
         if (loggedInUsername === 'Maclean') {
