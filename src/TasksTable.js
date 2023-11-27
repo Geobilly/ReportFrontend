@@ -35,7 +35,7 @@ const TasksTable = () => {
     // Fetch data from the Flask API when the component mounts
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://kempshot-report.onrender.com/fetch-tasks');
+        const response = await axios.get('https://kempstasksystem.onrender.com/fetch-tasks');
         setTasks(response.data);
 
         // Check if the username is "Maclean"
