@@ -229,4 +229,5 @@ const TasksTable = () => {
     </div>
   );
 };
+
 export default TasksTable;
