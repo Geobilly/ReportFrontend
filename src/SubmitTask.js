@@ -13,7 +13,7 @@ const SubmitTask = () => {
   useEffect(() => {
     const fetchUsernames = async () => {
       try {
-        const response = await axios.get('https://kempshot-report.onrender.com/fetch-usernames');
+        const response = await axios.get('https://kempstasksystem.onrender.com/fetch-usernames');
         setUsernames(response.data);
       } catch (error) {
         console.error('Error fetching usernames:', error);
@@ -32,7 +32,7 @@ const SubmitTask = () => {
       }
 
       // Use the correct API endpoint for your Flask server
-      const apiUrl = 'https://kempshot-report.onrender.com/submit-task';
+      const apiUrl = 'https://kempstasksystem.onrender.com/submit-task';
 
       // Send data to the Flask API
       await axios.post(apiUrl, {
