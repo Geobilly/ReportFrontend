@@ -50,10 +50,6 @@ const ReportForm = () => {
         "https://rmes.kempshot.com/submit-report",
         report,
       );
-      console.log(response.data);
-
-      setSuccessMessage("Report submitted successfully");
-      setOpenSnackbar(true);
 
       // Clear form fields after successful submission
       setReport({

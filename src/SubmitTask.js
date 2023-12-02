@@ -1,5 +1,3 @@
-// SubmitTask.js
-
 import React, { useState, useEffect } from "react";
 import {
   Typography,
@@ -26,7 +24,8 @@ const SubmitTask = () => {
         const response = await axios.get(
           "https://rmes.kempshot.com/fetch-usernames",
         );
-        setUsernames(response.data);
+
+        setUsernames(response.data); // Assuming response.data contains the array of usernames
       } catch (error) {
         console.error("Error fetching usernames:", error);
       }
