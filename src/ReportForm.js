@@ -1,18 +1,23 @@
-import React, { useState } from 'react';
-import { TextField, Button, Typography, Container, Box, Snackbar, SnackbarContent } from '@mui/material';
-import axios from 'axios';
-
-// ... (import statements)
+import React, { useState } from "react";
+import {
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Box,
+  Snackbar,
+  SnackbarContent,
+} from "@mui/material";
+import axios from "axios";
 
 const ReportForm = () => {
   const [report, setReport] = useState({
-    report_title: '',
-    author_name: '',
-    report_content: '',
-    attachments: '',
+    report_title: "",
+    author_name: "",
+    report_content: "",
   });
 
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleChange = (e) => {
@@ -21,7 +26,7 @@ const ReportForm = () => {
   };
 
   const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setOpenSnackbar(false);
@@ -32,30 +37,32 @@ const ReportForm = () => {
 
     // Check for empty fields
     if (
-      report.report_title.trim() === '' ||
-      report.author_name.trim() === '' ||
-      report.report_content.trim() === ''
+      report.report_title.trim() === "" ||
+      report.author_name.trim() === "" ||
+      report.report_content.trim() === ""
     ) {
-      console.error('Please fill in all compulsory fields');
+      console.error("Please fill in all compulsory fields");
       return;
     }
 
     try {
-      const response = await axios.post('https://kempshot-report.onrender.com/submit-report', report);
+      const response = await axios.post(
+        "https://rmes.kempshot.com/submit-report",
+        report,
+      );
       console.log(response.data);
 
-      setSuccessMessage('Report submitted successfully');
+      setSuccessMessage("Report submitted successfully");
       setOpenSnackbar(true);
 
       // Clear form fields after successful submission
       setReport({
-        report_title: '',
-        author_name: '',
-        report_content: '',
-        attachments: '',
+        report_title: "",
+        author_name: "",
+        report_content: "",
       });
     } catch (error) {
-      console.error('Error submitting report:', error);
+      console.error("Error submitting report:", error);
     }
   };
 
@@ -84,7 +91,7 @@ const ReportForm = () => {
             onChange={handleChange}
             required
           />
-         <TextField
+          <TextField
             label="Report Content"
             name="report_content"
             multiline
@@ -98,14 +105,6 @@ const ReportForm = () => {
             rows={8} // You can adjust the number of rows as needed
           />
 
-          {/* <TextField
-            label="Attachments"
-            name="attachments"
-            fullWidth
-            margin="normal"
-            value={report.attachments}
-            onChange={handleChange}
-          /> */}
           <Box mt={2}>
             <Button variant="contained" color="primary" type="submit">
               Submit Report
@@ -133,4 +132,3 @@ const ReportForm = () => {
 };
 
 export default ReportForm;
-

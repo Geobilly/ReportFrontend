@@ -1,22 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { Typography, TextField, Button, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
-import axios from 'axios';
+// SubmitTask.js
+
+import React, { useState, useEffect } from "react";
+import {
+  Typography,
+  TextField,
+  Button,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
+import axios from "axios";
 
 const SubmitTask = () => {
-  const [nameOfStaff, setNameOfStaff] = useState('');
-  const [title, setTitle] = useState('');
-  const [contentOfTask, setContentOfTask] = useState('');
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [nameOfStaff, setNameOfStaff] = useState("");
+  const [title, setTitle] = useState("");
+  const [contentOfTask, setContentOfTask] = useState("");
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [usernames, setUsernames] = useState([]);
 
   useEffect(() => {
     const fetchUsernames = async () => {
       try {
-        const response = await axios.get('https://kempshot-report.onrender.com/fetch-usernames');
+        const response = await axios.get(
+          "https://rmes.kempshot.com/fetch-usernames",
+        );
         setUsernames(response.data);
       } catch (error) {
-        console.error('Error fetching usernames:', error);
+        console.error("Error fetching usernames:", error);
       }
     };
 
@@ -27,12 +39,12 @@ const SubmitTask = () => {
     try {
       // Basic validation
       if (!nameOfStaff || !title || !contentOfTask) {
-        setError('Please fill in all fields.');
+        setError("Please fill in all fields.");
         return;
       }
 
       // Use the correct API endpoint for your Flask server
-      const apiUrl = 'https://kempshot-report.onrender.com/submit-task';
+      const apiUrl = "https://rmes.kempshot.com/submit-task";
 
       // Send data to the Flask API
       await axios.post(apiUrl, {
@@ -42,29 +54,36 @@ const SubmitTask = () => {
       });
 
       // Reset form fields and display success message
-      setNameOfStaff('');
-      setTitle('');
-      setContentOfTask('');
-      setError('');
-      setSuccessMessage('Task submitted successfully');
+      setNameOfStaff("");
+      setTitle("");
+      setContentOfTask("");
+      setError("");
+      setSuccessMessage("Task submitted successfully");
 
       // Clear success message after 6 seconds
       setTimeout(() => {
-        setSuccessMessage('');
+        setSuccessMessage("");
       }, 6000);
-
     } catch (error) {
-      console.error('Error submitting task:', error);
-      alert('Error submitting task');
+      console.error("Error submitting task:", error);
+      alert("Error submitting task");
     }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100vh",
+      }}
+    >
       <Typography variant="h4" align="center" gutterBottom>
         Submit Task
       </Typography>
-      <form style={{ width: '300px' }}>
+      <form style={{ width: "80%", maxWidth: "300px" }}>
         <FormControl fullWidth margin="normal">
           <InputLabel htmlFor="name-of-staff">Name of Staff</InputLabel>
           <Select
@@ -100,7 +119,9 @@ const SubmitTask = () => {
           Submit Task
         </Button>
         {error && <Typography color="error">{error}</Typography>}
-        {successMessage && <Typography style={{ color: 'green' }}>{successMessage}</Typography>}
+        {successMessage && (
+          <Typography style={{ color: "green" }}>{successMessage}</Typography>
+        )}
       </form>
     </div>
   );
