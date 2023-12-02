@@ -187,7 +187,6 @@ const TaskTable = () => {
         </Button>
       </Box>
 
-      {/* Dialog for the View details or Add Task */}
       <Dialog
         open={isDialogOpen}
         onClose={handleDialogClose}
