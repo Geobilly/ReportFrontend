@@ -191,6 +191,7 @@ const TaskTable = () => {
       <Dialog
         open={isDialogOpen}
         onClose={handleDialogClose}
+        c
         fullWidth
         maxWidth="md" // Adjust the width as needed
         PaperProps={{
